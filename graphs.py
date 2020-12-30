@@ -5,6 +5,3 @@ def read_graph_from_file(path):
             edge = vertex.strip().split(',')
             edges.append(tuple(edge))
     return edges
-
-
-print(read_graph_from_file('vertices.csv'))
