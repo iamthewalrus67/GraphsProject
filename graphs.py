@@ -4,6 +4,7 @@ Module for working with graphs.
 Functions:
 read_graph_from_file: get graph edges from file.
 get_adjancy_matrix: get adjancy matrix for given graph.
+bipartite_check: checks whether graph is bipartite.
 '''
 
 from typing import List, Tuple
@@ -53,3 +54,36 @@ def get_adjancy_matrix(graph: List[Tuple[object, object]], directed=False) -> Li
             matrix[pos2][pos1] = 1
 
     return matrix
+
+
+def bipartite_check(matrix: list) -> bool:
+    """
+    Return True if given graph is bipartite and False if not.
+
+    >>> bipartite_check([[1, 1, 0, 0, 0], [1, 0, 0, 0, 0], [0, 1, 0, 0, 0],\
+ [0, 0, 0, 0, 1], [1, 0, 0, 0, 1]])
+    False
+    >>> bipartite_check([[0, 1, 0, 0, 1], [1, 0, 0, 1, 0], [0, 1, 0, 0, 1],\
+ [0, 1, 0, 0, 1], [1, 0, 1, 0, 0]])
+    True
+    >>> bipartite_check([])
+    True
+    """
+
+    vertices = len(matrix)
+
+    for i in range(vertices):
+        # checking diagonals not to contain self-loops
+        if matrix[i][i] == 1:
+            return False
+
+        edges_amount = 0
+
+        for k in range(vertices):
+            # counting amount of edges
+            if matrix[i][k] == 1:
+                edges_amount = edges_amount + 1
+        # checking number of edges and returning False if it is odd
+        if edges_amount % 2 != 0:
+            return False
+    return True
