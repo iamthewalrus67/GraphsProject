@@ -118,17 +118,14 @@ def hamiltonian_cycle(graph: list, directed=False) -> list:
     vertices = get_vertices(graph)
     adjancy_matrix = get_adjancy_matrix(graph, directed)
 
-    for iteration, vertex in enumerate(vertices):
-        path = [-1] * len(vertices)
-        path[0] = vertex
+    path = [-1] * len(vertices)
+    path[0] = vertices[0]
 
-        cycle = hamiltonian_util(1, path, adjancy_matrix, vertices)
-        if (not cycle) and (iteration+1 == len(vertices)):
-            return []
-        if not cycle:
-            continue
+    cycle = hamiltonian_util(1, path, adjancy_matrix, vertices)
+    if not cycle:
+        return []
 
-        return cycle
+    return cycle
 
 
 def bipartite_check(graph: list) -> bool:
