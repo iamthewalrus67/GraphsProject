@@ -5,12 +5,11 @@ Functions:
 read_graph_from_file: get graph edges from file.
 get_adjancy_matrix: get adjancy matrix for given graph.
 bipartite_check: checks whether graph is bipartite.
+hamiltonian_cycle: find Hamiltonian cycle in graph. 
 '''
 
-from typing import List, Tuple
 
-
-def read_graph_from_file(path: str) -> List[Tuple[str, str]]:
+def read_graph_from_file(path: str) -> list:
     '''
     Read graph from csv file and return list of its edges.
     '''
@@ -22,7 +21,7 @@ def read_graph_from_file(path: str) -> List[Tuple[str, str]]:
     return edges
 
 
-def get_adjancy_matrix(graph: List[Tuple[object, object]], directed=False) -> List[List[int]]:
+def get_adjancy_matrix(graph: list, directed=False) -> list:
     '''
     Return adjancy matrix for given graph.
 
@@ -32,13 +31,7 @@ def get_adjancy_matrix(graph: List[Tuple[object, object]], directed=False) -> Li
     [[1, 1, 0, 0, 0], [1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 0, 0, 0, 1], [1, 0, 0, 0, 1]]
     '''
     # Find unique vertices in graph
-    vertices = []
-    for edge in graph:
-        for vertex in edge:
-            if vertex not in vertices:
-                vertices.append(vertex)
-
-    vertices.sort()
+    vertices = get_vertices(graph)
 
     # Create empty matrix
     matrix = [[0] * len(vertices) for _ in vertices]
@@ -56,20 +49,100 @@ def get_adjancy_matrix(graph: List[Tuple[object, object]], directed=False) -> Li
     return matrix
 
 
-def bipartite_check(matrix: list) -> bool:
+def get_vertices(graph: list) -> list:
+    '''
+    Return unique vertices of graph.
+
+    >>> get_vertices([(1, 2), (2, 1), (3, 1)])
+    [1, 2, 3]
+    >>> get_vertices([])
+    []
+    '''
+    vertices = []
+    for edge in graph:
+        for vertex in edge:
+            if vertex not in vertices:
+                vertices.append(vertex)
+
+    return sorted(vertices)
+
+
+def is_vertex_valid(vertex, position: int, path: list, matrix: list, vertices: list) -> bool:
+    '''
+    Check if vertex can be placed in path.
+    '''
+    # Check if vertex is already in path
+    if vertex in path:
+        return False
+
+    # Check if edge exists
+    if matrix[vertices.index(path[position-1])][vertices.index(vertex)] == 0:
+        return False
+
+    return True
+
+
+def hamiltonian_util(position: int, path: list, matrix: list, vertices: list) -> list:
+    '''
+    Recursive utility function for finding Hamiltonian cycle.
+    Return Hamiltonian cycle if it exists and [] if it doesn't.
+    '''
+    # Check if all vertices are in path
+    if position == len(vertices):
+        if matrix[vertices.index(path[position-1])][vertices.index(path[0])] == 1:
+            return True
+        return False
+
+    for vertex in vertices:
+        if is_vertex_valid(vertex, position, path, matrix, vertices):
+            path[position] = vertex
+
+            if hamiltonian_util(position+1, path, matrix, vertices):
+                return path + [path[0]]
+
+            # Remove current vertex if it didn't lead to result
+            path[position] = -1
+
+    return False
+
+
+def hamiltonian_cycle(graph: list, directed=False) -> list:
+    '''
+    Return Hamiltonian cycle if it exists and empty list if it doesn't.
+
+    >>> hamiltonian_cycle([(1, 2), (3, 2), (3, 1)])
+    [1, 2, 3, 1]
+    >>> hamiltonian_cycle([(1, 2), (3, 2), (3, 1)], directed=True)
+    []
+    '''
+    vertices = get_vertices(graph)
+    adjancy_matrix = get_adjancy_matrix(graph, directed)
+
+    for iteration, vertex in enumerate(vertices):
+        path = [-1] * len(vertices)
+        path[0] = vertex
+
+        cycle = hamiltonian_util(1, path, adjancy_matrix, vertices)
+        if (not cycle) and (iteration+1 == len(vertices)):
+            return []
+        if not cycle:
+            continue
+
+        return cycle
+
+
+def bipartite_check(graph: list) -> bool:
     """
     Return True if given graph is bipartite and False if not.
 
-    >>> bipartite_check([[1, 1, 0, 0, 0], [1, 0, 0, 0, 0], [0, 1, 0, 0, 0],\
- [0, 0, 0, 0, 1], [1, 0, 0, 0, 1]])
+    >>> bipartite_check([(1, 2), (3, 2), (4, 2), (1, 5), (3, 5), (4, 2)])
     False
-    >>> bipartite_check([[0, 1, 0, 0, 1], [1, 0, 0, 1, 0], [0, 1, 0, 0, 1],\
- [0, 1, 0, 0, 1], [1, 0, 1, 0, 0]])
+    >>> bipartite_check([(1, 4), (2, 3), (1, 2), (3, 4)])
     True
     >>> bipartite_check([])
     True
     """
-
+    matrix = get_adjancy_matrix(graph)
     vertices = len(matrix)
 
     for i in range(vertices):
