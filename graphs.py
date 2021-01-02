@@ -4,9 +4,11 @@ Module for working with graphs.
 Functions:
 read_graph_from_file: get graph edges from file.
 get_adjancy_matrix: get adjancy matrix for given graph.
+get_vertices: get unique vertices from graph.
 bipartite_check: checks whether graph is bipartite.
 hamiltonian_cycle: find Hamiltonian cycle in graph.
 colour_graph: find colours of vertices if colouring of graph in 3 colours is possible.
+check_euler: print Eularian circuit if it exists.
 '''
 
 
@@ -49,6 +51,8 @@ def get_adjancy_matrix(graph: list, directed=False) -> list:
 
     return matrix
 
+
+# Functions for finding Hamiltonian cycle in graph
 
 def get_vertices(graph: list) -> list:
     '''
@@ -160,6 +164,8 @@ def bipartite_check(graph: list) -> bool:
     return True
 
 
+# Functions for graph colouring
+
 def check_colour_of_vertex(matrix: list, vertex: int, list_colours: list,
                            colour: int, number_of_vertices: int) -> bool:
     """
@@ -247,7 +253,8 @@ def colour_graph(matrix: list, vertices: list) -> dict:
     return list_vertex_colour
 
 
-#functions for printing eulerian circuit
+# Functions for printing eulerian circuit
+
 def to_edge_dict(edge_list: list) -> dict:
     """
     Converts a graph from tuples of edges to dictionary of vertices.
@@ -272,21 +279,24 @@ def to_edge_dict(edge_list: list) -> dict:
     return result
 
 
-def dfs(u, graph, visited_edge, path=[]):
+def dfs(vertex1, graph, visited_edge, path=None):
     """
-    Uses dfs for finding eulerian path traversal
+    Uses dfs for finding eulerian path traversal.
     """
-    path = path + [u]
-    for v in graph[u]:
-        if visited_edge[u][v] is False:
-            visited_edge[u][v], visited_edge[v][u] = True, True
-            path = dfs(v, graph, visited_edge, path)
+    if path is None:
+        path = []
+
+    path = path + [vertex1]
+    for vertex2 in graph[vertex1]:
+        if visited_edge[vertex1][vertex2] is False:
+            visited_edge[vertex1][vertex2], visited_edge[vertex2][vertex1] = True, True
+            path = dfs(vertex2, graph, visited_edge, path)
     return path
 
 
 def check_circuit_or_path(graph, max_node):
     """
-    Checks whether graph has euler path or circuit
+    Checks whether graph has euler path or circuit.
     """
     odd_degree_nodes = 0
     odd_node = -1
@@ -305,7 +315,7 @@ def check_circuit_or_path(graph, max_node):
 
 def check_euler(graph, max_node=10):
     """
-    Prints the Eulerian circuit or the message about its absence
+    Prints the Eulerian circuit or the message about its absence.
 
     >>> check_euler({1: [2, 3, 4], 2: [1, 3], 3: [1, 2], 4: [1, 5], 5: [4]})
     graph doesn't have an Eulerian circuit
@@ -318,8 +328,9 @@ def check_euler(graph, max_node=10):
     >>> check_euler({1: [], 2: []})
     [1]
     """
-    visited_edge = [[False for _ in range(max_node + 1)] for _ in range(max_node + 1)]
-    check, odd_node = check_circuit_or_path(graph, max_node)
+    visited_edge = [[False for _ in range(max_node + 1)]
+                    for _ in range(max_node + 1)]
+    check = check_circuit_or_path(graph, max_node)[0]
     start_node = 1
     if check == 1:
         path = dfs(start_node, graph, visited_edge)
