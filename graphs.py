@@ -5,10 +5,11 @@ Functions:
 read_graph_from_file: get graph edges from file.
 get_adjancy_matrix: get adjancy matrix for given graph.
 get_vertices: get unique vertices from graph.
-bipartite_check: checks whether graph is bipartite.
 hamiltonian_cycle: find Hamiltonian cycle in graph.
+bipartite_check: checks whether graph is bipartite.
 colour_graph: find colours of vertices if colouring of graph in 3 colours is possible.
 check_euler: print Eularian circuit if it exists.
+check_for_isomorphism: check if two graphs are isomorphic.
 '''
 
 
@@ -19,7 +20,8 @@ def read_graph_from_file(path: str) -> list:
     edges = []
     with open(path, 'r') as vertices:
         for vertex in vertices:
-            edge = vertex.strip().split(',')
+            edge = vertex.strip().split(' ')
+            edge = [int(i) for i in edge]
             edges.append(tuple(edge))
     return edges
 
@@ -52,8 +54,6 @@ def get_adjancy_matrix(graph: list, directed=False) -> list:
     return matrix
 
 
-# Functions for finding Hamiltonian cycle in graph
-
 def get_vertices(graph: list) -> list:
     '''
     Return unique vertices of graph.
@@ -71,6 +71,8 @@ def get_vertices(graph: list) -> list:
 
     return sorted(vertices)
 
+
+# Functions for finding Hamiltonian cycle in graph
 
 def is_vertex_valid(vertex, position: int, path: list, matrix: list, vertices: list) -> bool:
     '''
@@ -132,6 +134,8 @@ def hamiltonian_cycle(graph: list, directed=False) -> list:
 
     return cycle
 
+
+# Function for checking if graph is bipartite
 
 def bipartite_check(graph: list) -> bool:
     """
@@ -298,17 +302,16 @@ def check_euler(graph, max_node=10):
     """
     Prints the Eulerian circuit or the message about its absence.
 
-    >>> check_euler({1: [2, 3, 4], 2: [1, 3], 3: [1, 2], 4: [1, 5], 5: [4]})
+    >>> check_euler([(1, 2), (1, 3), (1, 4), (2, 3), (4, 5)])
     graph doesn't have an Eulerian circuit
-    >>> check_euler({1: [2, 3, 4, 5], 2: [1, 3], 3: [1, 2], 4: [1, 5], 5: [1, 4]})
+    >>> check_euler([(1, 2), (1, 3), (1, 4), (1, 5), (2, 3), (4, 5)])
     [1, 2, 3, 1, 4, 5, 1]
-    >>> check_euler({1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2], 4: [1, 2, 5], 5: [4]})
+    >>> check_euler([(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (4, 5)])
     graph doesn't have an Eulerian circuit
-    >>> check_euler({1: [2, 3], 2: [1, 3], 3: [1, 2]})
+    >>> check_euler([(1, 2), (1, 3), (2, 3)])
     [1, 2, 3, 1]
-    >>> check_euler({1: [], 2: []})
-    [1]
     """
+    graph = to_edge_dict(graph)
     visited_edge = [[False for _ in range(max_node + 1)]
                     for _ in range(max_node + 1)]
     odd_degree_nodes = 0
@@ -323,3 +326,116 @@ def check_euler(graph, max_node=10):
         print(path)
     else:
         print("graph doesn't have an Eulerian circuit")
+
+
+# Functions for checking if two graphs are isomorphic
+
+def num_vertices(graph1: list, graph2: list):
+    """
+    Checks for number of vertices
+    >>> num_vertices([[1, 1], [1, 1]], [[1, 1, 1], [1, 1, 1], [1, 1, 1]])
+    False
+    >>> num_vertices([[1, 0], [0, 1]], [[0, 0], [0, 0]])
+    True
+    """
+    if len(graph1[0]) != len(graph2[0]):
+        return False
+    return True
+
+
+def num_edges(graph1: list, graph2: list):
+    """
+    Checks for number of edges
+    >>> num_edges([[1, 1], [0, 1]], [[1, 1], [1, 1]])
+    False
+    >>> num_edges([[1, 0], [0, 1]], [[0, 1], [1, 0]])
+    True
+    """
+    check1 = 0
+    check2 = 0
+    for row, _ in enumerate(graph1):
+        for column, _ in enumerate(graph1[row]):
+            if graph1[row][column] == 1:
+                check1 += 1
+            if graph2[row][column] == 1:
+                check2 += 1
+    return check1 == check2
+
+
+def vertices_degree(graph1: list, graph2: list):
+    """
+    Checks for vertices' degrees
+    >>> vertices_degree([[1, 0], [1, 1]], [[0, 1], [1, 0]])
+    (False, [])
+    >>> vertices_degree([[1, 1], [0, 1]], [[1, 0], [1, 1]])
+    (True, [2, 1], [1, 2])
+    """
+    check1 = []
+    check2 = []
+    for row, _ in enumerate(graph1):
+        degree1 = 0
+        degree2 = 0
+        for column, _ in enumerate(graph1[row]):
+            if graph1[row][column] == 1:
+                degree1 += 1
+            if graph2[row][column] == 1:
+                degree2 += 1
+        check1.append(degree1)
+        check2.append(degree2)
+    if sorted(check1) == sorted(check2):
+        return True, check1, check2
+    return False, []
+
+
+def permutations(graph1: list, graph2: list, degrees: tuple):
+    """
+    Checks if there can be bijection between two graphs
+    """
+    degrees1 = degrees[0]
+    degrees2 = degrees[1]
+    check1 = []
+    check2 = []
+    for index, _ in enumerate(degrees1):
+        degree = degrees1[index]
+        temp = []
+        for vertex, _ in enumerate(graph1[index]):
+            if graph1[index][vertex] == 1:
+                temp.append(degrees1[vertex])
+        check1.append((degree, tuple(sorted(temp))))
+
+    for index, _ in enumerate(degrees2):
+        degree = degrees2[index]
+        temp = []
+        for vertex in range(len(graph2[index])):
+            if graph2[index][vertex] == 1:
+                temp.append(degrees2[vertex])
+        check2.append((degree, tuple(sorted(temp))))
+
+    return len(set(check1 + check2)) == len(set(check1))
+
+
+def check_for_isomorphism(graph1: list, graph2: list, directed=False) -> bool:
+    """
+    Main function for checking isomorphism
+    >>> check_for_isomorphism([(1, 2), (1, 3), (1, 5),\
+    (2, 4), (2, 6), (3, 1), (3, 4),\
+    (4, 2), (5, 1), (5, 6), (5, 7), (6, 8), (7, 8)],\
+    [(1, 2), (1, 3), (1, 5), (2, 4), (3, 1), (3, 4),\
+    (3, 7), (4, 2), (5, 6), (5, 7), (6, 8), (7, 8)])
+    True
+    >>> check_for_isomorphism([(1, 3), (1, 5),\
+    (2, 4), (2, 6), (3, 1), (3, 4),\
+    (4, 2), (5, 1), (5, 6), (5, 7), (6, 8), (7, 8)],\
+    [(1, 2), (1, 3), (1, 5), (2, 4), (3, 1), (3, 4),\
+    (3, 7), (4, 2), (5, 6), (5, 7), (6, 8), (7, 8)])
+    False
+    """
+    matrix1 = get_adjancy_matrix(graph1, directed)
+    matrix2 = get_adjancy_matrix(graph2, directed)
+
+    if num_vertices(matrix1, matrix2):
+        if num_edges(matrix1, matrix2):
+            degrees = vertices_degree(matrix1, matrix2)
+            if degrees[0]:
+                return permutations(matrix1, matrix2, degrees[1:])
+    return False
