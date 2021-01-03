@@ -294,25 +294,6 @@ def dfs(vertex1, graph, visited_edge, path=None):
     return path
 
 
-def check_circuit_or_path(graph, max_node):
-    """
-    Checks whether graph has euler path or circuit.
-    """
-    odd_degree_nodes = 0
-    odd_node = -1
-    for i in range(max_node):
-        if i not in graph.keys():
-            continue
-        if len(graph[i]) % 2 == 1:
-            odd_degree_nodes += 1
-            odd_node = i
-    if odd_degree_nodes == 0:
-        return 1, odd_node
-    if odd_degree_nodes == 2:
-        return 2, odd_node
-    return 3, odd_node
-
-
 def check_euler(graph, max_node=10):
     """
     Prints the Eulerian circuit or the message about its absence.
@@ -330,9 +311,14 @@ def check_euler(graph, max_node=10):
     """
     visited_edge = [[False for _ in range(max_node + 1)]
                     for _ in range(max_node + 1)]
-    check = check_circuit_or_path(graph, max_node)[0]
+    odd_degree_nodes = 0
     start_node = 1
-    if check == 1:
+    for i in range(max_node):
+        if i not in graph.keys():
+            continue
+        if len(graph[i]) % 2 == 1:
+            odd_degree_nodes += 1
+    if odd_degree_nodes == 0:
         path = dfs(start_node, graph, visited_edge)
         print(path)
     else:
