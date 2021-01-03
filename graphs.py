@@ -145,19 +145,19 @@ def bipartite_check(graph: list) -> bool:
         return True
     matrix = get_adjancy_matrix(graph)
     vertices = len(matrix)
-    colorArr = [-1] * vertices
-    colorArr[0] = 1
+    colors = [-1] * vertices
+    colors[0] = 1
     queue = []
     queue.append(0)
     while queue:
-        u = queue.pop()
-        if matrix[u][u] == 1:
+        i = queue.pop()
+        if matrix[i][i] == 1:
             return False
-        for v in range(vertices):
-            if matrix[u][v] == 1 and colorArr[v] == -1:
-                colorArr[v] = 1 - colorArr[u]
-                queue.append(v)
-            elif matrix[u][v] == 1 and colorArr[v] == colorArr[u]:
+        for k in range(vertices):
+            if matrix[i][k] == 1 and colors[k] == -1:
+                colors[k] = 1 - colors[i]
+                queue.append(k)
+            elif matrix[i][k] == 1 and colors[k] == colors[i]:
                 return False
     return True
 
