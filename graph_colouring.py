@@ -51,26 +51,29 @@ def colour_graph(graph: list) -> dict:
     >>> colour_graph([('a', 'b'), ('a', 'c'), ('a', 'd'), ('b', 'd'), ('c', 'd')])
     [('a', 1), ('b', 2), ('c', 2), ('d', 3)]
     >>> colour_graph([('a', 'b'), ('a', 'c'), ('a', 'd'), ('b', 'c'), ('b', 'd'), ('c', 'd')])
-    'Colouring in 3 colours is impossible.'
+    Colouring in 3 colours is impossible.
     >>> colour_graph([(1, 4), (1, 5), (2, 4), (2, 5), (3, 4), (3, 5)])
     [(1, 1), (2, 1), (3, 1), (4, 2), (5, 3)]
     >>> colour_graph([(1, 2), (1, 4), (1, 5), (2, 3), (2, 4), (3, 4), (4, 5)])
     [(1, 1), (2, 2), (3, 1), (4, 3), (5, 2)]
     >>> colour_graph([('a', 'b')])
-    'Colouring in 3 colours is impossible.'
+    Colouring in 3 colours is impossible.
     """
     matrix = get_adjancy_matrix(graph)
     vertices = get_vertices(graph)
     number_of_colours = 3
     number_of_vertices = len(matrix)
     if number_of_vertices < 3:
-        return "Colouring in 3 colours is impossible."
+        print("Colouring in 3 colours is impossible.")
+        return
     list_colours = [0] * number_of_vertices
     if not colour_vertex(matrix, number_of_colours, list_colours, 0, number_of_vertices):
-        return "Colouring in 3 colours is impossible."
+        print("Colouring in 3 colours is impossible.")
+        return
     check_used_colours = len(set(list_colours))
     if check_used_colours == 2:
         list_colours[-1] = 3
     list_vertex_colour = [(name_of_vertex, list_colours[index])
                           for index, name_of_vertex in enumerate(vertices)]
-    return list_vertex_colour
+    print(list_vertex_colour)
+    return

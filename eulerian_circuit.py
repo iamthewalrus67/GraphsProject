@@ -3,6 +3,7 @@ Module for printing Eulerian circuit.
 '''
 
 from graphs import get_adjancy_matrix
+import sys
 
 
 def convert_to_dict(edge_list: list) -> dict:
@@ -58,6 +59,7 @@ def print_euler_circuit(graph):
     >>> print_euler_circuit([(1, 2), (1, 3), (2, 3)])
     [1, 2, 3, 1]
     """
+    sys.setrecursionlimit(1200)
     graph = convert_to_dict(graph)
     count_vertices = len(graph)
     visited_edge = [[False for _ in range(count_vertices + 1)]
