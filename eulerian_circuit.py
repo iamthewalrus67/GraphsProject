@@ -38,7 +38,9 @@ def deep_first_search(vertex1, graph, visited_edge, path=None):
 
     path = path + [vertex1]
     for vertex2 in graph[vertex1]:
-        if visited_edge[vertex1][vertex2] is False:
+        if not visited_edge[vertex1][vertex2]:
+            graph[vertex1].remove(vertex2)
+            graph[vertex2].remove(vertex1)
             visited_edge[vertex1][vertex2], visited_edge[vertex2][vertex1] = True, True
             path = deep_first_search(vertex2, graph, visited_edge, path)
     return path
@@ -47,7 +49,6 @@ def deep_first_search(vertex1, graph, visited_edge, path=None):
 def print_euler_circuit(graph):
     """
     Prints the Eulerian circuit or the message about its absence.
-
     >>> print_euler_circuit([(1, 2), (1, 3), (1, 4), (2, 3), (4, 5)])
     graph doesn't have an Eulerian circuit
     >>> print_euler_circuit([(1, 2), (1, 3), (1, 4), (1, 5), (2, 3), (4, 5)])
@@ -58,18 +59,16 @@ def print_euler_circuit(graph):
     [1, 2, 3, 1]
     """
     graph = convert_to_dict(graph)
-    count_verticles = len(graph)
-    visited_edge = [[False for _ in range(count_verticles + 1)]
-                    for _ in range(count_verticles + 1)]
-    odd_degree_nodes = 0
+    count_vertices = len(graph)
+    visited_edge = [[False for _ in range(count_vertices + 1)]
+                    for _ in range(count_vertices + 1)]
+
     starting_node = 1
-    for i in range(count_verticles):
-        if i not in graph.keys():
-            continue
+    for i in graph:
         if len(graph[i]) % 2 == 1:
-            odd_degree_nodes += 1
-    if odd_degree_nodes == 0:
-        path = deep_first_search(starting_node, graph, visited_edge)
-        print(path)
-    else:
-        print("graph doesn't have an Eulerian circuit")
+            print("graph doesn't have an Eulerian circuit")
+            return
+
+    path = deep_first_search(starting_node, graph, visited_edge)
+    print(path)
+    return
