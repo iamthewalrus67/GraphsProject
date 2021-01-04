@@ -62,5 +62,6 @@ def find_hamiltonian_cycle(graph: list, directed=False) -> list:
     cycle = hamiltonian_util(1, path, adjancy_matrix, vertices)
     if not cycle:
         print('This graph does not have a Hamiltonian cycle')
-    else:
-        print(cycle)
+        return
+
+    return cycle

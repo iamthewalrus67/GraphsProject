@@ -75,5 +75,4 @@ def colour_graph(graph: list) -> dict:
         list_colours[-1] = 3
     list_vertex_colour = [(name_of_vertex, list_colours[index])
                           for index, name_of_vertex in enumerate(vertices)]
-    print(list_vertex_colour)
-    return
+    return list_vertex_colour

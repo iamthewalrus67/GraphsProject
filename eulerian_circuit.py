@@ -72,5 +72,4 @@ def print_euler_circuit(graph):
             return
 
     path = deep_first_search(starting_node, graph, visited_edge)
-    print(path)
-    return
+    return path
