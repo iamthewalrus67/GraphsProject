@@ -2,6 +2,8 @@
 Module for checking if graph can be coloured in 3 colours.
 '''
 
+from graphs import get_adjancy_matrix, get_vertices
+
 
 def check_colour_of_vertex(matrix: list, vertex: int, list_colours: list,
                            colour: int, number_of_vertices: int) -> bool:
@@ -42,39 +44,23 @@ def colour_vertex(matrix: list, number_of_colours: int, list_colours: list,
     return False
 
 
-def colour_graph(matrix: list, vertices: list) -> dict:
+def colour_graph(graph: list) -> dict:
     """
     Return list with tuples (vertex of graph, colour) if colouring
     in 3 colours is possible. Else return message about impossibility.
-    >>> colour_graph([[0, 1, 1, 1], [1, 0, 0, 1], [1, 0, 0, 1], [1, 1, 1, 0]], ['a', 'b', 'c', 'd'])
+    >>> colour_graph([('a', 'b'), ('a', 'c'), ('a', 'd'), ('b', 'd'), ('c', 'd')])
     [('a', 1), ('b', 2), ('c', 2), ('d', 3)]
-    >>> colour_graph([[0, 1, 1, 1], [1, 0, 1, 1], [1, 1, 0, 1], [1, 1, 1, 0]], ['a', 'b', 'c', 'd'])
+    >>> colour_graph([('a', 'b'), ('a', 'c'), ('a', 'd'), ('b', 'c'), ('b', 'd'), ('c', 'd')])
     'Colouring in 3 colours is impossible.'
-    >>> colour_graph([[0, 0, 0, 1, 1], [0, 0, 0, 1, 1], [0, 0, 0, 1, 1],\
-        [1, 1, 1, 0, 0], [1, 1, 1, 0, 0]], [1, 2, 3, 4, 5])
+    >>> colour_graph([(1, 4), (1, 5), (2, 4), (2, 5), (3, 4), (3, 5)])
     [(1, 1), (2, 1), (3, 1), (4, 2), (5, 3)]
-    >>> colour_graph([[0, 1, 0, 1, 1], [1, 0, 1, 1, 0], [0, 1, 0, 1, 0],\
-        [1, 1, 0, 1, 1], [1, 0, 0, 1, 0]], [1, 2, 3, 4, 5])
+    >>> colour_graph([(1, 2), (1, 4), (1, 5), (2, 3), (2, 4), (3, 4), (4, 5)])
     [(1, 1), (2, 2), (3, 1), (4, 3), (5, 2)]
-    >>> colour_graph([\
-        [0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1],\
-        [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1],\
-        [0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0],\
-        [1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0],\
-        [0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0],\
-        [1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0],\
-        [0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1],\
-        [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1],\
-        [0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0],\
-        [0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0],\
-        [0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0],\
-        [1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0]\
-    ], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-    [(1, 1), (2, 1), (3, 2), (4, 2), (5, 1), (6, 3),\
- (7, 3), (8, 3), (9, 1), (10, 3), (11, 2), (12, 2)]
-    >>> colour_graph([[0, 1], [1, 0]], ['a', 'b'])
+    >>> colour_graph([('a', 'b')])
     'Colouring in 3 colours is impossible.'
     """
+    matrix = get_adjancy_matrix(graph)
+    vertices = get_vertices(graph)
     number_of_colours = 3
     number_of_vertices = len(matrix)
     if number_of_vertices < 3:
