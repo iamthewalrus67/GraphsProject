@@ -23,7 +23,7 @@ def is_vertex_valid(vertex, position: int, path: list, matrix: list, vertices: l
 def hamiltonian_util(position: int, path: list, matrix: list, vertices: list) -> list:
     '''
     Recursive utility function for finding Hamiltonian cycle.
-    Return Hamiltonian cycle if it exists and [] if it doesn't.
+    Return Hamiltonian cycle if it exists and False if it doesn't.
     '''
     # Check if all vertices are in path
     if position == len(vertices):
@@ -46,12 +46,12 @@ def hamiltonian_util(position: int, path: list, matrix: list, vertices: list) ->
 
 def find_hamiltonian_cycle(graph: list, directed=False) -> list:
     '''
-    Return Hamiltonian cycle if it exists and empty list if it doesn't.
+    Print Hamiltonian cycle if it exists or message about its absence if it doesn't.
 
     >>> find_hamiltonian_cycle([(1, 2), (3, 2), (3, 1)])
     [1, 2, 3, 1]
     >>> find_hamiltonian_cycle([(1, 2), (3, 2), (3, 1)], directed=True)
-    []
+    This graph does not have a Hamiltonian cycle
     '''
     vertices = get_vertices(graph)
     adjancy_matrix = get_adjancy_matrix(graph, directed)
@@ -61,6 +61,6 @@ def find_hamiltonian_cycle(graph: list, directed=False) -> list:
 
     cycle = hamiltonian_util(1, path, adjancy_matrix, vertices)
     if not cycle:
-        return []
-
-    return cycle
+        print('This graph does not have a Hamiltonian cycle')
+    else:
+        print(cycle)
